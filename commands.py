@@ -99,7 +99,7 @@ def _encry(*args):
                     
     key = f'{int(key_dec):x}'
     chain = str(block) + ':' + str(key)
-    return chain
+    return chain, '--fast'
 
 def _shampoo(*args):
     try:

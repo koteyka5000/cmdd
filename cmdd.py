@@ -5,10 +5,34 @@ from colorama import init, Fore
 import commands
 init(autoreset=False)
 
+# Константы (Можно менять)
 
+COMMANDS_WIFI = ('wifi',)  # Команды, для которых нужен выход в localhost
+TIME_TO_SCROLL = 50     # Время для анимации плавного вывода. По умолчанию 50
+err_count = 1  # Используется при закрытии программы во время печати (Забей)
 isConnect = False  # Осуществлять выход в локальную сеть как сервер?
 isDebug = 1    # Режим вывода ошибок в терминал cmdd
 
+# Настройки окна Ткинтера
+# ==========================
+
+# По умолчанию: 400x300
+ROOT_SIZE_X = 1000  # Длинна в пикселях
+ROOT_SIZE_Y = 600   # Высота в пикселях
+
+# Рекомендуемые значения
+DEFAULT_SIZES_X = {400: 45, 700: 82, 1000: 120}  # ROOT_SIZE_X: WIDTH_OUTPUT_X
+DEFAULT_SIZES_Y = {300: 11, 600: 30}             # ROOT_SIZE_Y: WIDTH_OUTPUT_Y
+
+# Тема
+THEME = 'dark'  # dark / light
+
+# ==========================
+
+
+# Важные переменные (Нельзя менять)
+
+TIME_TO_SCROLL_DEFAULT = TIME_TO_SCROLL + 0  # Исользуется, чтобы откатить время при использовании аттрибута --fast (Строка 104)
 
 
 if isConnect:
@@ -25,30 +49,18 @@ if isConnect:
 def send(data):
     client.send(data.encode('utf-8'))  # передаем данные, предварительно упаковав их в байты
 
-# Настройки окна Ткинтера
-# ==========================
 
-# По умолчанию: 400x300
-ROOT_SIZE_X = 1000  # Длинна в пикселях
-ROOT_SIZE_Y = 600   # Высота в пикселях
-
-# Рекомендуемые значения
-DEFAULT_SIZES_X = {400: 45, 700: 82, 1000: 120}  # ROOT_SIZE_X: WIDTH_OUTPUT_X
-DEFAULT_SIZES_Y = {300: 11, 600: 30}             # ROOT_SIZE_Y: WIDTH_OUTPUT_Y
-
-# Темы
-theme = 'dark'  # dark / light
-if theme == 'dark':
+if THEME == 'dark':
     BG_COLOR = 'gray'
     BG_OUTPUT_COLOR = 'gray60'
-elif theme == 'light':
+elif THEME == 'light':
     BG_COLOR = 'cyan'
     BG_OUTPUT_COLOR = 'white'
 else:  #  Кастомная тема
     BG_COLOR = ''            # Цвет фона
     BG_OUTPUT_COLOR = ''     # Цвет консоли для вывода
 
-# ==========================
+
 root = tk.Tk()
 root.geometry(f'{ROOT_SIZE_X}x{ROOT_SIZE_Y}')
 root['bg'] = BG_COLOR
@@ -73,12 +85,8 @@ outputText.place(x=20, y=100)
 inputText = tk.Entry(root, textvariable=inputTextVar, width=50)
 inputText.place(x=20, y=30)
 
-# Константы
-COMMANDS_WIFI = ('wifi',)
-TIME_TO_SCROLL = 50      # Время для анимации плавного вывода. По умолчанию 50
-err_count = 1  # Используется при закрытии программы во время печати (Забей)
-
 def run(commandIn):  # Распределитель команд
+    global TIME_TO_SCROLL
     command = commandIn.split()
     command, *args = command
 
@@ -93,7 +101,16 @@ def run(commandIn):  # Распределитель команд
     if command[0] == '>':  # Ожидание перед выполнением команды (Пример: >4 shampoo... перед выполнение будет задержка 4 сек) 
         root.after(int(command[1:]) * 1000)  # Секунды -> миллисекунды
         command, *args = args
-    return connect(command, *args)  # Выполняем команду
+    output = connect(command, *args)  # Выполняем команду
+    if type(output) == tuple:
+        result = output[0]
+        arg = output[1]
+        if arg == '--fast':
+            TIME_TO_SCROLL = 15
+        return result
+    return output
+        
+
 
 def connect(command, *args):  # Обработка команд
     try:
@@ -109,6 +126,7 @@ def kill(event):  # Выход
 
 
 def beautifulPrint(text):  # Красивый вывод
+    global TIME_TO_SCROLL, TIME_TO_SCROLL_DEFAULT
     if text == '':  # Если cls
         return      # Закрываем функцию
     for letter in text:
@@ -116,6 +134,7 @@ def beautifulPrint(text):  # Красивый вывод
         write(letter)
         root.update()
     write('\n')
+    TIME_TO_SCROLL = TIME_TO_SCROLL_DEFAULT + 0
 
 
 def write(text):  # Запись в текстовое поле
