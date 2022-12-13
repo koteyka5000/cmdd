@@ -9,8 +9,8 @@ init(autoreset=False)
 isConnect = False  # Осуществлять выход в локальную сеть как сервер?
 isDebug = False    # Режим вывода ошибок в терминал cmdd
 
-# Время для анимации плавного вывода. По умолчанию 50
-TIME_TO_SCROLL = 50
+
+
 
 if isConnect:
     HOST = "127.0.0.1"  # Standard loopback interface address (localhost)
@@ -41,7 +41,10 @@ outputText.place(x=20, y=100)
 inputText = tk.Entry(root, textvariable=inputTextVar, width=50)
 inputText.place(x=20, y=30)
 
+# Константы
 COMMANDS_WIFI = ('wifi',)
+TIME_TO_SCROLL = 50      # Время для анимации плавного вывода. По умолчанию 50
+err_count = 1  # Используется при закрытии программы во время печати (Забей)
 
 def run(commandIn):  # Распределитель команд
     command = commandIn.split()
@@ -84,9 +87,14 @@ def beautifulPrint(text):  # Красивый вывод
 
 
 def write(text):  # Запись в текстовое поле
-    outputText.configure(state=tk.NORMAL)
-    outputText.insert(tk.END, text)
-    outputText.configure(state=tk.DISABLED)
+    try:
+        outputText.configure(state=tk.NORMAL)
+        outputText.insert(tk.END, text)
+        outputText.configure(state=tk.DISABLED)
+    except Exception:
+        global err_count
+        print(f'{Fore.RED}Отключение во время печати {Fore.CYAN}<{err_count}>')
+        err_count += 1
 
 #  start -> run -> connect
 def start(event=None):  # Запуск комманды
