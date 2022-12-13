@@ -7,7 +7,7 @@ init(autoreset=False)
 
 
 isConnect = False  # Осуществлять выход в локальную сеть как сервер?
-isDebug = False    # Режим вывода ошибок в терминал cmdd
+isDebug = 1    # Режим вывода ошибок в терминал cmdd
 
 
 
@@ -28,14 +28,14 @@ def send(data):
 
 
 root = tk.Tk()
-root.geometry('400x300')
+root.geometry('400x300')  # По умолчанию: 400x300
 root['bg'] = 'cyan'
 root.title('Cmd')
 root.resizable(False, False)
 
 inputTextVar = tk.StringVar(root)
 
-outputText = tk.Text(root, height=11, width=45, state=tk.DISABLED)
+outputText = tk.Text(root, height=11, width=45, state=tk.DISABLED)  # По умолчанию:  width=45
 outputText.place(x=20, y=100)
 
 inputText = tk.Entry(root, textvariable=inputTextVar, width=50)
