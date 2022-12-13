@@ -101,6 +101,92 @@ def _encry(*args):
     chain = str(block) + ':' + str(key)
     return chain, '--fast'
 
+def _decry(*args):
+    try:
+        crypted = args[0]
+        text = args[1]
+    except Exception:
+        return 'SyntaxError'
+    encryption = crypted
+
+    alphabet = ["а", "б", "в", "г", "д", "е", "ё", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т", 
+                "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я", " "]
+
+    publisher = text # исходный текст
+    res = '' # блок в шестнадцатиричной системе
+    block = '' # строка блоков
+    spam = 0 # блок в восьмеричной/десятичной системе
+    count = 0 # первый счетчик для перебора букв и их намеров
+    count1 = 0 # второй счетчик для домножения temp
+    method = 0.00 # переменная для превращения каждого элемената в ирацианально число
+    temp = [] # список для записи чисел после деления на π
+    subsequence = [] # список с исходными намерами букв домноженый на 1000
+    keyl = [] # строка ключей в шестнадцатиричной сисетме
+    trash = [] # строка блоков в шестнадцатиричной системе
+    aelist = [] # список всех блоков домноженых на коофициенты
+    key_dec_l = [] # список ключей в десятичной сисеме
+    conf = 0 # в какой их списков пойдет символ
+    pi = 3.141592653589793 # π
+
+    #Перевод чисел в числовую последовательность по афавиту с коофициентом 1000
+    try:
+        for i in publisher:
+            while i != alphabet[count]:
+                count +=1
+            if i == alphabet[count]:
+                subsequence.append((count+1)*1000)
+                subsequence.append(0)
+                count = 0
+    except Exception:
+        return 'Можно юзать только маленькие рус буквы', '--fast'
+
+    # деление на π и округление до целого числа с кооффициентом 100
+
+    for y in subsequence:
+        if y != 0:
+            method = y/pi
+            temp.append(round(method*100))
+            #temp.append(0)
+            
+            
+    # тут мы разделяем эдементы до двоеточия и после
+    for z in encryption:
+        if conf == 0:
+            trash.append(z) # до
+            if z == ':':
+                conf = 1
+        elif conf == 1:
+            keyl.append(z) # после
+            
+    key_hex = (''.join(keyl))
+    key_dec = int(key_hex, 16)
+
+    # переводим десятичные ключи в список 
+    for c in str(key_dec):
+        key_dec_l.append(c)
+        
+    # генерируем блоки из добытых ключей
+    for u in temp:
+        spam = int(oct(u)[2:])
+        spam = int(spam) * int(key_dec_l[count1])
+        count1 += 1
+        spam = int(oct(spam)[2:])
+        res = f'{spam:x}'
+        aelist.append(res)
+        
+    # переводим блоки в строку
+    for p in aelist:
+        block += str(p)
+        
+    # создаем цепочку   
+    chain = str(block) + ':' + str(key_hex)
+
+    if chain == encryption:
+        return "Succecful"
+    else:
+        return "Failed"
+
+
 def _shampoo(*args):
     try:
         via = args[0]

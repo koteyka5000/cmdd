@@ -3,6 +3,7 @@ from socket import socket, AF_INET, SOCK_STREAM
 from tkinter import messagebox as mb
 from colorama import init, Fore
 import commands
+from pyperclip import copy as pyperCopy
 init(autoreset=False)
 
 # Константы (Можно менять)
@@ -33,6 +34,7 @@ THEME = 'dark'  # dark / light
 # Важные переменные (Нельзя менять)
 
 TIME_TO_SCROLL_DEFAULT = TIME_TO_SCROLL + 0  # Исользуется, чтобы откатить время при использовании аттрибута --fast (Строка 104)
+is_copy = False
 
 
 if isConnect:
@@ -107,14 +109,18 @@ def run(commandIn):  # Распределитель команд
         arg = output[1]
         if arg == '--fast':
             TIME_TO_SCROLL = 15
+        if is_copy:
+            pyperCopy(result)
         return result
+    if is_copy:
+        pyperCopy(output)
     return output
         
 
 
 def connect(command, *args):  # Обработка команд
     try:
-        return eval(f"commands._{command}(*{args}, globals())")  # Система запуска команды из другого файла
+      return eval(f"commands._{command}(*{args}, globals())")  # Система запуска команды из другого файла
     except Exception as e:
         if isDebug:
             return f'IncorrectCommandError ({e})'  # Выводим ошибку если включен isDebug
@@ -160,11 +166,16 @@ def clsInput(event=None):
     inputText.delete(0, tk.END) 
     inputText.focus()
 
-tk.Button(root, bg=BG_COLOR, text='Enter', command=start).place(x=345, y=25)
+def copyResult(event=None):
+    global is_copy
+    is_copy = True
+    start()
+
+tk.Button(root, bg=BG_COLOR, text='Copy', command=copyResult).place(x=345, y=25)
 root.bind('<Alt_L>', start)
 root.bind('<Return>', start)
 root.bind('<Escape>', kill)
-root.bind('<Control_L>', clsInput)
+root.bind('<Alt_R>', clsInput)
 
 
 def on_closing():
