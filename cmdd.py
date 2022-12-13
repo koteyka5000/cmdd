@@ -11,7 +11,6 @@ isDebug = 1    # Режим вывода ошибок в терминал cmdd
 
 
 
-
 if isConnect:
     HOST = "127.0.0.1"  # Standard loopback interface address (localhost)
     PORT = 10000  # Port to listen on (non-privileged ports are > 1023)
@@ -26,16 +25,49 @@ if isConnect:
 def send(data):
     client.send(data.encode('utf-8'))  # передаем данные, предварительно упаковав их в байты
 
+# Настройки окна Ткинтера
+# ==========================
 
+# По умолчанию: 400x300
+ROOT_SIZE_X = 1000  # Длинна в пикселях
+ROOT_SIZE_Y = 600   # Высота в пикселях
+
+# Рекомендуемые значения
+DEFAULT_SIZES_X = {400: 45, 700: 82, 1000: 120}  # ROOT_SIZE_X: WIDTH_OUTPUT_X
+DEFAULT_SIZES_Y = {300: 11, 600: 30}             # ROOT_SIZE_Y: WIDTH_OUTPUT_Y
+
+# Темы
+theme = 'dark'  # dark / light
+if theme == 'dark':
+    BG_COLOR = 'gray'
+    BG_OUTPUT_COLOR = 'gray60'
+elif theme == 'light':
+    BG_COLOR = 'cyan'
+    BG_OUTPUT_COLOR = 'white'
+else:  #  Кастомная тема
+    BG_COLOR = ''            # Цвет фона
+    BG_OUTPUT_COLOR = ''     # Цвет консоли для вывода
+
+# ==========================
 root = tk.Tk()
-root.geometry('400x300')  # По умолчанию: 400x300
-root['bg'] = 'cyan'
+root.geometry(f'{ROOT_SIZE_X}x{ROOT_SIZE_Y}')
+root['bg'] = BG_COLOR
 root.title('Cmd')
 root.resizable(False, False)
 
 inputTextVar = tk.StringVar(root)
 
-outputText = tk.Text(root, height=11, width=45, state=tk.DISABLED)  # По умолчанию:  width=45
+if ROOT_SIZE_X in DEFAULT_SIZES_X:
+    WIDTH_OUTPUT_X = DEFAULT_SIZES_X[ROOT_SIZE_X]
+else:
+    WIDTH_OUTPUT_X = int(ROOT_SIZE_X / 8.98888)
+
+if ROOT_SIZE_Y in DEFAULT_SIZES_Y:
+    WIDTH_OUTPUT_Y = DEFAULT_SIZES_Y[ROOT_SIZE_Y]
+else:
+    WIDTH_OUTPUT_Y = int(ROOT_SIZE_Y / 27.2727272727)
+
+outputText = tk.Text(root, height=WIDTH_OUTPUT_Y, width=WIDTH_OUTPUT_X, state=tk.DISABLED, bg=BG_OUTPUT_COLOR)
 outputText.place(x=20, y=100)
 
 inputText = tk.Entry(root, textvariable=inputTextVar, width=50)
@@ -73,7 +105,7 @@ def connect(command, *args):  # Обработка команд
 
 
 def kill(event):  # Выход
-    exit(144)
+    exit(0)
 
 
 def beautifulPrint(text):  # Красивый вывод
@@ -105,11 +137,15 @@ def start(event=None):  # Запуск комманды
         output = run(command)
     beautifulPrint(output)
 
+def clsInput(event=None):
+    inputText.delete(0, tk.END) 
+    inputText.focus()
 
-tk.Button(root, bg='cyan', text='Enter', command=start).place(x=345, y=25)
+tk.Button(root, bg=BG_COLOR, text='Enter', command=start).place(x=345, y=25)
 root.bind('<Alt_L>', start)
 root.bind('<Return>', start)
 root.bind('<Escape>', kill)
+root.bind('<Control_L>', clsInput)
 
 
 def on_closing():

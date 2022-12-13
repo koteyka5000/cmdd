@@ -127,7 +127,7 @@ def _connect(*args):
     if not checkCommand('connect', *args):
         return 'connection refused! Incorrect IPv4 Adress'
 
-    return f'connecting to {user} via IPv4: {ip}'
+    return f'connecting to {user} via IPv4: {ip}'    
 def _cls(*args):
     globalsDict = args[0]
     outputText = globalsDict['outputText']
@@ -172,5 +172,4 @@ def _wifi(*args):
         send(f'off {time}')              # Посылаем запрос на отключение
         return f'WiFi user={user} disabled'
 
-    #     return 'Что-то пошло не так'
 
