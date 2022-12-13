@@ -7,7 +7,7 @@ init(autoreset=False)
 
 
 isConnect = False  # Осуществлять выход в локальную сеть как сервер?
-isDebug = False  # Режим вывода ошибок в терминал cmdd
+isDebug = False    # Режим вывода ошибок в терминал cmdd
 
 # Время для анимации плавного вывода. По умолчанию 50
 TIME_TO_SCROLL = 50
@@ -60,14 +60,9 @@ def run(commandIn):  # Распределитель команд
         command, *args = args
     return connect(command, *args)  # Выполняем команду
 
-def my_exec(code):  # Украденый код со stackoverflow))
-    exec('global i; i = %s' % code)  # Это необходимо, чтобы получить return из exec()
-    global i
-    return i
-
 def connect(command, *args):  # Обработка команд
     try:
-        return my_exec(f"commands._{command}(*{args}, globals())")  # Система запуска команды из другого файла
+        return eval(f"commands._{command}(*{args}, globals())")  # Система запуска команды из другого файла
     except Exception as e:
         if isDebug:
             return f'IncorrectCommandError ({e})'  # Выводим ошибку если включен isDebug
