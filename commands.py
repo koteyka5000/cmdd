@@ -258,4 +258,42 @@ def _wifi(*args):
         send(f'off {time}')              # Посылаем запрос на отключение
         return f'WiFi user={user} disabled'
 
-
+def _help(*args):
+    try:
+        command = args[0]
+    except Exception:
+        return """
+        Команды в файле commands.py
+        Команды: encry, decry, shampoo, connect, cls, test, wifi, kill
+        Для помощи по отдельной команде введи: help <название команды>
+        Левый Alt: запустить команду
+        Правый Alt: очистить строку ввода
+        Ecs: выйти
+        Enter: запустить команду
+        """
+    if command == 'encry':
+        return "encry: Используется для шифрования слова. Использование: encry <слово>"
+    elif command == 'decry':
+        return 'Используется для проверки совпадает ли зашифрованный текст с исходным. Использование: decry <шифр> <исходное слово>'
+    elif command == 'shampoo':
+        return 'Команда для развлечения. Использование: shampoo via <марка> <объём (число)> <true/false>'
+    elif command == 'connect':
+        return "Типо подключение (На самом деле нет) Использование: connect <ip> <user>\nПример ip: 192.52.11.253"
+    elif command == 'cls':
+        return 'Очистка поля вывода и ввода. Использование: cls'
+    elif command == 'test':
+        return 'Команда для теста. Использование: test <arg1> <arg2>'
+    elif command == 'wifi':
+        return 'Не обращай внимания, это тебе не нужно.'
+    elif command == 'kill':
+        return "Выход"
+    else:
+        return """
+        Команды в файле commands.py
+        Команды: encry, decry, shampoo, connect, cls, test, wifi, kill
+        Для помощи по отдельной команде введи: help <название команды>
+        Левый Alt: запустить команду
+        Правый Alt: очистить строку ввода
+        Ecs: выйти
+        Enter: запустить команду
+        """, '--fast'
