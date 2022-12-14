@@ -2,6 +2,13 @@
 # Он передаётся как последний аргумент
 # _ Нужно чтобы избежать конфликтов с другими функциями, название функции это то, что нужно будет вводить в cmd (Без _)
 
+from os import system
+# import subprocess
+
+# def system_call(command):
+#     result = subprocess.run([command], stdout=subprocess.PIPE, shell=True)
+#     return result.stdout.decode('utf-8')
+
 def checkCommand(cmd, *args):  # Проверка правильности введёной команды (Не обязательно, делается вручную)
     if cmd == 'shampoo':
         via = args[0]
@@ -22,6 +29,14 @@ def checkCommand(cmd, *args):  # Проверка правильности вв�
         except Exception:
             return False
         return True
+
+def _official(*args):
+    return "Официальный файл commands.py"
+
+# Настроки команд (Можно менять)
+
+PORT = 10000 # Порт по умолчанию
+
 
 # Делать команды ниже.     _название(*args)
 
@@ -186,6 +201,32 @@ def _decry(*args):
     else:
         return "Failed"
 
+# def _net(*args):
+#     try:
+#         action = args[0]
+#     except Exception:
+#         return '..действие? SyntaxErr'
+
+#     match action:                               # Если сможешь реализовать харош
+#         case 'fix':
+#             act = args[1]
+#             try:
+#                 PORT = args[2]
+#             except Exception:
+#                 pass
+
+#             # if act == 'get':
+#             #     return system(f'netstat -o | findstr :{PORT}'), '--fast'  # Ищем процесс, который использует наш порт
+#             return system(f'taskkill -pid {PORT} /f')  # Завершаем этот процесс
+
+def _taskkill(*args):
+    try:
+        pid = args[0]
+        gl = args[-1]
+    except Exception:
+        return 'SyntaxError'
+    system(f'taskkill -pid {pid} /f')
+    return 'Done'
 
 def _shampoo(*args):
     try:
@@ -214,27 +255,15 @@ def _connect(*args):
         return 'connection refused! Incorrect IPv4 Adress'
 
     return f'connecting to {user} via IPv4: {ip}'    
-def _cls(*args):
-    globalsDict = args[0]
-    outputText = globalsDict['outputText']
-    inputText = globalsDict['inputText']
-    tk = globalsDict['tk']
-
-    outputText.configure(state='normal')
-    outputText.delete(1.0, tk.END)
-    outputText.configure(state='disabled')
-    inputText.delete(0, tk.END) 
-    inputText.focus()
-    return ''
 
 def _test(*args):  # Для различных тестирований
     try:
         one = args[0]
         two = args[1]
+        globalList = args[2]
     except Exception:
         return 'Err'
-    print(f'{one}; {two} /\n{globals()}')
-    return one, two
+    return f'{one}; {two} /\n{globalList}'
 
 def _wifi(*args):
     try:
@@ -287,6 +316,8 @@ def _help(*args):
         return 'Не обращай внимания, это тебе не нужно.'
     elif command == 'kill':
         return "Выход"
+    elif command == 'taskkill':
+        return 'Завершение процесса. Использование: taskkill <pid>'
     else:
         return """
         Команды в файле commands.py
@@ -297,3 +328,7 @@ def _help(*args):
         Ecs: выйти
         Enter: запустить команду
         """, '--fast'
+
+if __name__ == '__main__':
+    print('=\n=\n=\n=\n=\n=\n=\n=\n=\n=\n====================\nЗапускать файл cmdd.py')
+

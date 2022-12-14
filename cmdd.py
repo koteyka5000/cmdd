@@ -2,13 +2,17 @@ import tkinter as tk
 from socket import socket, AF_INET, SOCK_STREAM
 from tkinter import messagebox as mb
 from colorama import init, Fore
-import commands
 from pyperclip import copy as pyperCopy
 init(autoreset=False)
+try:
+    import commands
+except Exception:
+    mb.showwarning('Не найден файл', "Не найден файл с командами, доступны только основные команды")
 
 # Константы (Можно менять)
 
 COMMANDS_WIFI = ('wifi',)  # Команды, для которых нужен выход в localhost
+DEFAULT_COMMANDS = 'cls', 'kill'
 TIME_TO_SCROLL = 50     # Время для анимации плавного вывода. По умолчанию 50
 err_count = 1  # Используется при закрытии программы во время печати (Забей)
 isConnect = False  # Осуществлять выход в локальную сеть как сервер?
@@ -87,6 +91,10 @@ outputText.place(x=20, y=100)
 inputText = tk.Entry(root, textvariable=inputTextVar, width=50)
 inputText.place(x=20, y=30)
 
+
+
+
+
 def run(commandIn):  # Распределитель команд
     global TIME_TO_SCROLL
     command = commandIn.split()
@@ -95,15 +103,15 @@ def run(commandIn):  # Распределитель команд
     if command in COMMANDS_WIFI and isConnect == False: # Проверяем, есть ли подключение для особых команд
         return 'ERR: Для данной команды необходин доступ в localhost'
 
-    if command == 'kill':  # Принудительно закрываем приложение
-        if isConnect:      # Если подключались к сети
-            s.close()      # Закрываем соединение
-        kill(1)            # Закрываем приложение
-
     if command[0] == '>':  # Ожидание перед выполнением команды (Пример: >4 shampoo... перед выполнение будет задержка 4 сек) 
         root.after(int(command[1:]) * 1000)  # Секунды -> миллисекунды
         command, *args = args
-    output = connect(command, *args)  # Выполняем команду
+
+    if command in DEFAULT_COMMANDS:  # Если команда входит в стандартные
+        output = eval(f'_cmd_{command}({args})')  # Вызываем её
+    else:  # Если команда не входит в стандартные
+        output = connect(command, *args)  # Выполняем команду
+
     if type(output) == tuple:
         result = output[0]
         arg = output[1]
@@ -112,19 +120,35 @@ def run(commandIn):  # Распределитель команд
         if is_copy:
             pyperCopy(result)
         return result
+
     if is_copy:
         pyperCopy(output)
     return output
-        
+
+# Сборник команд по умолчанию
+
+def _cmd_cls(*args):
+        outputText.configure(state='normal')
+        outputText.delete(1.0, tk.END)
+        outputText.configure(state='disabled')
+        inputText.delete(0, tk.END) 
+        inputText.focus()
+        return ''
+    
+def _cmd_kill(*args):
+        if isConnect:      # Если подключались к сети
+            s.close()      # Закрываем соединение
+        kill(1)            # Закрываем приложение
 
 
 def connect(command, *args):  # Обработка команд
-    try:
-      return eval(f"commands._{command}(*{args}, globals())")  # Система запуска команды из другого файла
-    except Exception as e:
-        if isDebug:
-            return f'IncorrectCommandError ({e})'  # Выводим ошибку если включен isDebug
-        return 'IncorrectCommandError'   # В противном случае подробно ошибку не выводим
+    if isDebug:
+        return eval(f"commands._{command}(*{args}, globals())")  # Система запуска команды из другого файла
+    else:
+        try:
+            return eval(f"commands._{command}(*{args}, globals())")  # Система запуска команды из другого файла 
+        except Exception as e:
+            return 'IncorrectCommandError'   # В противном случае подробно ошибку не выводим
 
 
 def kill(event):  # Выход
@@ -188,5 +212,5 @@ def on_closing():
         root.destroy()
 
 root.protocol("WM_DELETE_WINDOW", on_closing)  # Перехват закрытия cmdd в функцию on_closing
-
+inputText.focus()
 root.mainloop()
