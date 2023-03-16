@@ -3,6 +3,8 @@
 # _ Нужно чтобы избежать конфликтов с другими функциями, название функции это то, что нужно будет вводить в cmd (Без _)
 
 from os import system
+from time import sleep
+from string import ascii_lowercase
 # import subprocess
 
 # def system_call(command):
@@ -49,6 +51,8 @@ def _encry(*args):
 
     alphabet = ["а", "б", "в", "г", "д", "е", "ё", "ж", "з", "и", "й", "к", "л", "м", "н", "о", "п", "р", "с", "т", 
             "у", "ф", "х", "ц", "ч", "ш", "щ", "ъ", "ы", "ь", "э", "ю", "я", " "]
+
+    alphabet = ascii_lowercase
 
     publisher = text # исходный текст
     res = '' # блок в шестнадцатиричной системе
@@ -331,4 +335,18 @@ def _help(*args):
 
 if __name__ == '__main__':
     print('=\n=\n=\n=\n=\n=\n=\n=\n=\n=\n====================\nЗапускать файл cmdd.py')
+    for i in range(5):
+        print('\\', end='')
+        print('\r',end='                  ')
+        sleep(0.1)
+        print('|', end='')
+        print('\r',end='                  ')
+        sleep(0.1)
+        print('/', end='')
+        print('\r',end='                  ')
+        sleep(0.1)
+        print('|', end='')
+        print('\r',end='                  ')
+        sleep(0.1)
+        
 

@@ -152,6 +152,8 @@ def connect(command, *args):  # Обработка команд
 
 
 def kill(event):  # Выход
+    global TIME_TO_SCROLL_DEFAULT
+    TIME_TO_SCROLL_DEFAULT = 0
     exit(0)
 
 
@@ -174,7 +176,8 @@ def write(text):  # Запись в текстовое поле
         outputText.configure(state=tk.DISABLED)
     except Exception:
         global err_count
-        print(f'{Fore.RED}Отключение во время печати {Fore.CYAN}<{err_count}>')
+        print(f'{Fore.RED}Обработка символов при аварийном закрытии {Fore.CYAN}<{err_count}>', end='')
+        print('\r', end='')
         err_count += 1
 
 #  start -> run -> connect
@@ -203,12 +206,15 @@ root.bind('<Alt_R>', clsInput)
 
 
 def on_closing():
+    global TIME_TO_SCROLL, TIME_TO_SCROLL_DEFAULT
     if isConnect:  # Если подключены
         if mb.askyesno("Предупреждение", "После выхода связь с клиентом не получится восстановить\nВыйти?"):
             print(f'{Fore.RED}Отключение')
             root.destroy()
     else:
         print(f'{Fore.RED}Отключение')
+        TIME_TO_SCROLL = 0
+        TIME_TO_SCROLL_DEFAULT = 0
         root.destroy()
 
 root.protocol("WM_DELETE_WINDOW", on_closing)  # Перехват закрытия cmdd в функцию on_closing
